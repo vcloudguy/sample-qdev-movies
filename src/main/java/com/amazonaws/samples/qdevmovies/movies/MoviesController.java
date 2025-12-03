@@ -50,20 +50,8 @@ public class MoviesController {
         logger.info("Ahoy! Starting movie treasure hunt with name: '{}', id: '{}', genre: '{}'", 
                    name, id, genre);
         
-        // Validate search criteria, ye scurvy dog!
-        if (!movieService.isValidSearchCriteria(name, id, genre)) {
-            logger.warn("Invalid search criteria provided - no valid parameters found");
-            model.addAttribute("movies", movieService.getAllMovies());
-            model.addAttribute("genres", movieService.getAllGenreTreasures());
-            model.addAttribute("searchError", "Arrr! Ye need to provide at least one search criterion, matey!");
-            model.addAttribute("searchName", name);
-            model.addAttribute("searchId", id);
-            model.addAttribute("searchGenre", genre);
-            return "movies";
-        }
-        
         try {
-            // Search for movie treasures!
+            // Search for movie treasures using specific exception handling!
             List<Movie> searchResults = movieService.searchMovieTreasures(name, id, genre);
             
             // Prepare the treasure chest for display
@@ -88,12 +76,29 @@ public class MoviesController {
                 logger.info("Found {} movie treasures matching search criteria", searchResults.size());
             }
             
-        } catch (Exception e) {
-            logger.error("Scurvy bug encountered during movie treasure hunt: {}", e.getMessage(), e);
+        } catch (InvalidSearchCriteriaException e) {
+            logger.warn("Invalid search criteria provided: {}", e.getMessage());
+            model.addAttribute("movies", movieService.getAllMovies());
+            model.addAttribute("genres", movieService.getAllGenreTreasures());
+            model.addAttribute("searchError", e.getMessage());
+            model.addAttribute("searchName", name);
+            model.addAttribute("searchId", id);
+            model.addAttribute("searchGenre", genre);
+        } catch (MovieDataLoadException e) {
+            logger.error("Movie data loading error during search: {}", e.getMessage(), e);
             model.addAttribute("movies", movieService.getAllMovies());
             model.addAttribute("genres", movieService.getAllGenreTreasures());
             model.addAttribute("searchError", 
-                "Blimey! A scurvy bug prevented the treasure hunt. Please try again, me hearty!");
+                "Blimey! A scurvy bug with the movie data prevented the treasure hunt. Please try again, me hearty!");
+            model.addAttribute("searchName", name);
+            model.addAttribute("searchId", id);
+            model.addAttribute("searchGenre", genre);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid argument during search: {}", e.getMessage(), e);
+            model.addAttribute("movies", movieService.getAllMovies());
+            model.addAttribute("genres", movieService.getAllGenreTreasures());
+            model.addAttribute("searchError", 
+                "Arrr! Invalid search parameters provided, matey! Check yer input and try again.");
             model.addAttribute("searchName", name);
             model.addAttribute("searchId", id);
             model.addAttribute("searchGenre", genre);

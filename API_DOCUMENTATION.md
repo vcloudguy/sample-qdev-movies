@@ -47,6 +47,10 @@ Currently, no authentication is required for accessing the movie search API. All
 
 **Response:** HTML page with movie grid and search form
 
+**Specific Exceptions:**
+- `MovieDataLoadException`: When movie data cannot be loaded from storage
+- `IOException`: When there are file system access issues
+
 **Example:**
 ```bash
 curl -X GET "http://localhost:8080/movies"
@@ -74,6 +78,12 @@ curl -X GET "http://localhost:8080/movies"
 3. All searches are case-insensitive and support partial matching
 
 **Response:** HTML page with filtered results and pirate-themed messages
+
+**Specific Exceptions:**
+- `InvalidSearchCriteriaException`: When no valid search parameters are provided
+- `MovieNotFoundException`: When searching by ID with non-existent movie
+- `MovieDataLoadException`: When movie data cannot be accessed during search
+- `IllegalArgumentException`: When search parameters contain invalid values
 
 **Examples:**
 
@@ -109,6 +119,11 @@ curl -X GET "http://localhost:8080/movies/search?name=Space%20Wars"
 | `id` | Long | Yes | Movie ID (path parameter, 1-12) |
 
 **Response:** HTML page with detailed movie information
+
+**Specific Exceptions:**
+- `MovieNotFoundException`: When the specified movie ID doesn't exist
+- `MovieDataLoadException`: When movie data cannot be loaded
+- `IllegalArgumentException`: When the ID parameter is invalid
 
 **Example:**
 ```bash
@@ -153,6 +168,7 @@ The following genres are available in the movie treasure chest:
 
 When no valid search parameters are provided:
 
+**Exception:** `InvalidSearchCriteriaException`
 **Response:** HTML page with error message
 **Message:** "Arrr! Ye need to provide at least one search criterion, matey!"
 
@@ -160,6 +176,7 @@ When no valid search parameters are provided:
 
 When searching by ID with non-existent movie:
 
+**Exception:** `MovieNotFoundException`
 **Response:** HTML page with error message
 **Message:** "Shiver me timbers! No movie treasures found matching yer search criteria."
 
@@ -170,12 +187,21 @@ When search criteria don't match any movies:
 **Response:** HTML page with informational message
 **Message:** "Shiver me timbers! No movie treasures found matching yer search criteria. Try adjusting yer search terms, ye landlubber!"
 
-### Server Errors
+### Data Loading Errors
 
-When unexpected errors occur:
+When movie data cannot be loaded:
 
+**Exception:** `MovieDataLoadException`
 **Response:** HTML page with error message
-**Message:** "Blimey! A scurvy bug prevented the treasure hunt. Please try again, me hearty!"
+**Message:** "Blimey! A scurvy bug with the movie data prevented the treasure hunt. Please try again, me hearty!"
+
+### Invalid Parameters
+
+When search parameters contain invalid values:
+
+**Exception:** `IllegalArgumentException`
+**Response:** HTML page with error message
+**Message:** "Arrr! Invalid search parameters provided, matey! Check yer input and try again."
 
 ## Examples
 
@@ -269,7 +295,7 @@ The API incorporates authentic pirate language throughout the user experience:
 
 **Error Messages:**
 - "Arrr! Ye need to provide at least one search criterion, matey!"
-- "Blimey! A scurvy bug prevented the treasure hunt. Please try again, me hearty!"
+- "Blimey! A scurvy bug with the movie data prevented the treasure hunt. Please try again, me hearty!"
 
 **Information Messages:**
 - "Shiver me timbers! No movie treasures found matching yer search criteria. Try adjusting yer search terms, ye landlubber!"
@@ -286,14 +312,22 @@ async function searchMovies(name, genre, id) {
     if (genre) params.append('genre', genre);
     if (id) params.append('id', id);
     
-    const response = await fetch(`/movies/search?${params}`);
-    return response.text(); // Returns HTML
+    try {
+        const response = await fetch(`/movies/search?${params}`);
+        return response.text(); // Returns HTML
+    } catch (error) {
+        console.error('Search failed:', error);
+        throw new Error('Arrr! Search treasure hunt failed, matey!');
+    }
 }
 
 // Example usage
 searchMovies('prison', null, null)
     .then(html => {
         document.getElementById('results').innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Treasure hunt error:', error);
     });
 ```
 
