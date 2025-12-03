@@ -1,14 +1,18 @@
-# Movie Service - Spring Boot Demo Application
+# Movie Service - Spring Boot Demo Application 🏴‍☠️
 
-A simple movie catalog web application built with Spring Boot, demonstrating Java application development best practices.
+A simple movie catalog web application built with Spring Boot, demonstrating Java application development best practices with a **pirate-themed movie search and filtering system**!
 
 ## Features
 
 - **Movie Catalog**: Browse 12 classic movies with detailed information
+- **🔍 Pirate Movie Search**: Hunt for movie treasures using our advanced search functionality
+- **🎭 Genre Filtering**: Filter movies by genre with pirate-themed interface
+- **🆔 ID-based Search**: Find specific movie treasures by their unique ID
 - **Movie Details**: View comprehensive information including director, year, genre, duration, and description
 - **Customer Reviews**: Each movie includes authentic customer reviews with ratings and avatars
 - **Responsive Design**: Mobile-first design that works on all devices
-- **Modern UI**: Dark theme with gradient backgrounds and smooth animations
+- **Modern UI**: Dark theme with gradient backgrounds, smooth animations, and pirate-themed styling
+- **Robust Error Handling**: Specific exception handling instead of general exceptions for better debugging
 
 ## Technology Stack
 
@@ -17,6 +21,9 @@ A simple movie catalog web application built with Spring Boot, demonstrating Jav
 - **Maven** for dependency management
 - **Log4j 2.20.0**
 - **JUnit 5.8.2**
+- **Thymeleaf** for templating
+- **Pirate Language Integration** 🏴‍☠️
+- **Custom Exception Classes** for specific error handling
 
 ## Quick Start
 
